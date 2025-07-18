@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const Layout = ({ children, isLoggedIn, setIsLoggedIn }) => {
-  const [showFAB] = useState(true);
+  const [showFAB] = useState(false); // Hide the floating action button (chatbot)
 
   const navItems = [
     { label: 'Dashboard', icon: '🏠', path: '/' },

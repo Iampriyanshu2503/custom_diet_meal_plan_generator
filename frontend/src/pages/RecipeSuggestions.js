@@ -1,115 +1,45 @@
+import recipesData from '../constants/recipes.json';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Sample recipe data - in a real app, this would come from the backend
-const recipes = [
-  {
-    id: 1,
-    name: 'Quinoa Buddha Bowl',
-    image: '🥗',
-    calories: 420,
-    prepTime: '20 min',
-    difficulty: 'Easy',
-    cuisine: 'Mediterranean',
-    tags: ['Vegetarian', 'High Protein', 'Gluten-Free'],
-    ingredients: ['Quinoa', 'Chickpeas', 'Avocado', 'Cherry tomatoes', 'Cucumber', 'Lemon'],
-    rating: 4.8,
-    reviews: 124,
-    description: 'A nutritious and colorful bowl packed with protein and fresh vegetables.'
-  },
-  {
-    id: 2,
-    name: 'Grilled Salmon with Asparagus',
-    image: '🐟',
-    calories: 580,
-    prepTime: '25 min',
-    difficulty: 'Medium',
-    cuisine: 'Mediterranean',
-    tags: ['High Protein', 'Omega-3', 'Low Carb'],
-    ingredients: ['Salmon fillet', 'Asparagus', 'Olive oil', 'Lemon', 'Garlic', 'Herbs'],
-    rating: 4.9,
-    reviews: 89,
-    description: 'Perfectly grilled salmon with tender asparagus and zesty lemon.'
-  },
-  {
-    id: 3,
-    name: 'Chicken Stir-Fry',
-    image: '🍳',
-    calories: 380,
-    prepTime: '15 min',
-    difficulty: 'Easy',
-    cuisine: 'Asian',
-    tags: ['High Protein', 'Quick', 'Low Fat'],
-    ingredients: ['Chicken breast', 'Broccoli', 'Bell peppers', 'Soy sauce', 'Ginger', 'Garlic'],
-    rating: 4.6,
-    reviews: 156,
-    description: 'A quick and healthy stir-fry loaded with vegetables and lean protein.'
-  },
-  {
-    id: 4,
-    name: 'Avocado Toast with Eggs',
-    image: '🥑',
-    calories: 320,
-    prepTime: '10 min',
-    difficulty: 'Easy',
-    cuisine: 'American',
-    tags: ['Vegetarian', 'Quick', 'High Protein'],
-    ingredients: ['Whole grain bread', 'Avocado', 'Eggs', 'Cherry tomatoes', 'Microgreens'],
-    rating: 4.7,
-    reviews: 203,
-    description: 'A classic breakfast with creamy avocado and perfectly poached eggs.'
-  },
-  {
-    id: 5,
-    name: 'Greek Yogurt Parfait',
-    image: '🍓',
-    calories: 280,
-    prepTime: '5 min',
-    difficulty: 'Easy',
-    cuisine: 'Mediterranean',
-    tags: ['Vegetarian', 'High Protein', 'Quick'],
-    ingredients: ['Greek yogurt', 'Berries', 'Granola', 'Honey', 'Chia seeds'],
-    rating: 4.5,
-    reviews: 167,
-    description: 'A protein-rich parfait with fresh berries and crunchy granola.'
-  },
-  {
-    id: 6,
-    name: 'Lentil Soup',
-    image: '🥣',
-    calories: 240,
-    prepTime: '35 min',
-    difficulty: 'Easy',
-    cuisine: 'Mediterranean',
-    tags: ['Vegetarian', 'High Fiber', 'Low Fat'],
-    ingredients: ['Red lentils', 'Onion', 'Carrots', 'Celery', 'Spices', 'Vegetable broth'],
-    rating: 4.4,
-    reviews: 98,
-    description: 'A hearty and warming soup packed with plant-based protein.'
-  }
+const mealTypes = [
+  { label: 'All', value: 'All' },
+  { label: 'Breakfast', value: 'Breakfast' },
+  { label: 'Lunch', value: 'Lunch' },
+  { label: 'Dinner', value: 'Dinner' },
+  { label: 'Snack', value: 'Snack' },
+  { label: 'Extras', value: 'Extra' }
 ];
 
-const cuisines = ['All', 'Mediterranean', 'Asian', 'American', 'Italian', 'Mexican'];
-const difficulties = ['All', 'Easy', 'Medium', 'Hard'];
-const tags = ['All', 'Vegetarian', 'High Protein', 'Gluten-Free', 'Quick', 'Low Carb', 'High Fiber', 'Low Fat', 'Omega-3'];
-
 const RecipeSuggestions = () => {
+  const [selectedMealType, setSelectedMealType] = useState('All');
   const [selectedCuisine, setSelectedCuisine] = useState('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState('All');
   const [selectedTags, setSelectedTags] = useState(['All']);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [sortBy, setSortBy] = useState('rating');
+  const [goalType, setGoalType] = useState('All');
+  const [showFullInstructions, setShowFullInstructions] = useState(false);
 
-  const filteredRecipes = recipes.filter(recipe => {
-    const matchesCuisine = selectedCuisine === 'All' || recipe.cuisine === selectedCuisine;
-    const matchesDifficulty = selectedDifficulty === 'All' || recipe.difficulty === selectedDifficulty;
-    const matchesTags = selectedTags.includes('All') || 
-      selectedTags.some(tag => recipe.tags.includes(tag));
-    const matchesSearch = recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      recipe.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-    return matchesCuisine && matchesDifficulty && matchesTags && matchesSearch;
+  // Updated filtering logic
+  const filteredRecipes = recipesData.filter(recipe => {
+    // Meal Type
+    const mealTypeMatch = selectedMealType === 'All' || recipe.mealType === selectedMealType;
+    // Cuisine
+    const cuisineMatch = selectedCuisine === 'All' || recipe.cuisine === selectedCuisine;
+    // Difficulty
+    const difficultyMatch = selectedDifficulty === 'All' || recipe.difficulty === selectedDifficulty;
+    // Goal Type
+    const goalTypeMatch = goalType === 'All' || recipe.goalType === goalType;
+    // Tags (Dietary Preferences)
+    const tagsMatch = selectedTags.includes('All') || selectedTags.every(tag => recipe.tags.includes(tag));
+    // Search Query
+    const searchMatch =
+      searchQuery.trim() === '' ||
+      recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (recipe.ingredients && recipe.ingredients.join(' ').toLowerCase().includes(searchQuery.toLowerCase()));
+    return mealTypeMatch && cuisineMatch && difficultyMatch && goalTypeMatch && tagsMatch && searchMatch;
   });
 
   const sortedRecipes = [...filteredRecipes].sort((a, b) => {
@@ -245,6 +175,19 @@ const RecipeSuggestions = () => {
             <p className="text-xl text-gray-600">Discover delicious and healthy recipes tailored to your preferences</p>
           </div>
 
+          {/* Meal Type Filter Bar */}
+          <div className="flex flex-wrap justify-center gap-3 mb-8">
+            {mealTypes.map(type => (
+              <button
+                key={type.value}
+                onClick={() => setSelectedMealType(type.value)}
+                className={`px-4 py-2 rounded-full font-semibold border transition-all duration-200 ${selectedMealType === type.value ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-primary-600 border-primary-200 hover:bg-primary-50'}`}
+              >
+                {type.label}
+              </button>
+            ))}
+          </div>
+
           {/* Search and Filters */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -278,9 +221,15 @@ const RecipeSuggestions = () => {
                   onChange={(e) => setSelectedCuisine(e.target.value)}
                   className="input-modern focus-ring"
                 >
-                  {cuisines.map(cuisine => (
-                    <option key={cuisine} value={cuisine}>{cuisine}</option>
-                  ))}
+                  {/* cuisines.map(cuisine => ( */}
+                    <option key="All" value="All">All</option>
+                    <option key="Indian" value="Indian">Indian</option>
+                    <option key="Mediterranean" value="Mediterranean">Mediterranean</option>
+                    <option key="Asian" value="Asian">Asian</option>
+                    <option key="American" value="American">American</option>
+                    <option key="Italian" value="Italian">Italian</option>
+                    <option key="Mexican" value="Mexican">Mexican</option>
+                  {/* ))} */}
                 </select>
               </div>
 
@@ -292,9 +241,12 @@ const RecipeSuggestions = () => {
                   onChange={(e) => setSelectedDifficulty(e.target.value)}
                   className="input-modern focus-ring"
                 >
-                  {difficulties.map(difficulty => (
-                    <option key={difficulty} value={difficulty}>{difficulty}</option>
-                  ))}
+                  {/* difficulties.map(difficulty => ( */}
+                    <option key="All" value="All">All</option>
+                    <option key="Easy" value="Easy">Easy</option>
+                    <option key="Medium" value="Medium">Medium</option>
+                    <option key="Hard" value="Hard">Hard</option>
+                  {/* ))} */}
                 </select>
               </div>
 
@@ -325,21 +277,173 @@ const RecipeSuggestions = () => {
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Dietary Preferences</label>
               <div className="flex flex-wrap gap-2">
-                {tags.map(tag => (
+                {/* tags.map(tag => ( */}
                   <motion.button
-                    key={tag}
-                    onClick={() => handleTagToggle(tag)}
+                    key="All"
+                    onClick={() => handleTagToggle('All')}
                     className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
-                      selectedTags.includes(tag)
+                      selectedTags.includes('All')
                         ? 'bg-primary-500 text-white shadow-glow'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {tag}
+                    All
                   </motion.button>
-                ))}
+                  <motion.button
+                    key="Vegetarian"
+                    onClick={() => handleTagToggle('Vegetarian')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
+                      selectedTags.includes('Vegetarian')
+                        ? 'bg-primary-500 text-white shadow-glow'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Vegetarian
+                  </motion.button>
+                  <motion.button
+                    key="High Protein"
+                    onClick={() => handleTagToggle('High Protein')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
+                      selectedTags.includes('High Protein')
+                        ? 'bg-primary-500 text-white shadow-glow'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    High Protein
+                  </motion.button>
+                  <motion.button
+                    key="Gluten-Free"
+                    onClick={() => handleTagToggle('Gluten-Free')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
+                      selectedTags.includes('Gluten-Free')
+                        ? 'bg-primary-500 text-white shadow-glow'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Gluten-Free
+                  </motion.button>
+                  <motion.button
+                    key="Quick"
+                    onClick={() => handleTagToggle('Quick')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
+                      selectedTags.includes('Quick')
+                        ? 'bg-primary-500 text-white shadow-glow'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Quick
+                  </motion.button>
+                  <motion.button
+                    key="Low Carb"
+                    onClick={() => handleTagToggle('Low Carb')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
+                      selectedTags.includes('Low Carb')
+                        ? 'bg-primary-500 text-white shadow-glow'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Low Carb
+                  </motion.button>
+                  <motion.button
+                    key="High Fiber"
+                    onClick={() => handleTagToggle('High Fiber')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
+                      selectedTags.includes('High Fiber')
+                        ? 'bg-primary-500 text-white shadow-glow'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    High Fiber
+                  </motion.button>
+                  <motion.button
+                    key="Low Fat"
+                    onClick={() => handleTagToggle('Low Fat')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
+                      selectedTags.includes('Low Fat')
+                        ? 'bg-primary-500 text-white shadow-glow'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Low Fat
+                  </motion.button>
+                  <motion.button
+                    key="Omega-3"
+                    onClick={() => handleTagToggle('Omega-3')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
+                      selectedTags.includes('Omega-3')
+                        ? 'bg-primary-500 text-white shadow-glow'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Omega-3
+                  </motion.button>
+                {/* ))} */}
+              </div>
+            </div>
+
+            {/* Goal Type Filter */}
+            <div className="mt-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Goal Type</label>
+              <div className="flex flex-wrap gap-2">
+                {/* goalTypes.map(type => ( */}
+                  <motion.button
+                    key="All"
+                    onClick={() => setGoalType('All')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
+                      goalType === 'All'
+                        ? 'bg-primary-500 text-white shadow-glow'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    All
+                  </motion.button>
+                  <motion.button
+                    key="Weight Loss"
+                    onClick={() => setGoalType('Weight Loss')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
+                      goalType === 'Weight Loss'
+                        ? 'bg-primary-500 text-white shadow-glow'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Weight Loss
+                  </motion.button>
+                  <motion.button
+                    key="Weight Gain"
+                    onClick={() => setGoalType('Weight Gain')}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
+                      goalType === 'Weight Gain'
+                        ? 'bg-primary-500 text-white shadow-glow'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Weight Gain
+                  </motion.button>
+                {/* ))} */}
               </div>
             </div>
           </motion.div>
@@ -379,7 +483,7 @@ const RecipeSuggestions = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-                onClick={() => setSelectedRecipe(null)}
+                onClick={() => { setSelectedRecipe(null); setShowFullInstructions(false); }}
               >
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
@@ -391,13 +495,12 @@ const RecipeSuggestions = () => {
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-3xl font-bold text-gradient-primary">{selectedRecipe.name}</h2>
                     <button
-                      onClick={() => setSelectedRecipe(null)}
+                      onClick={() => { setSelectedRecipe(null); setShowFullInstructions(false); }}
                       className="text-2xl text-gray-500 hover:text-gray-700"
                     >
                       ✕
                     </button>
                   </div>
-                  
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                       <div className="text-8xl mb-4 text-center">{selectedRecipe.image}</div>
@@ -407,7 +510,6 @@ const RecipeSuggestions = () => {
                         <p>📊 Difficulty: {selectedRecipe.difficulty}</p>
                         <p>🌍 Cuisine: {selectedRecipe.cuisine}</p>
                       </div>
-                      
                       <div className="flex items-center mb-6">
                         <div className="flex text-yellow-400 mr-2">
                           {[...Array(5)].map((_, i) => (
@@ -420,7 +522,6 @@ const RecipeSuggestions = () => {
                           {selectedRecipe.rating} ({selectedRecipe.reviews} reviews)
                         </span>
                       </div>
-
                       <div className="flex flex-wrap gap-2 mb-6">
                         {selectedRecipe.tags.map((tag, index) => (
                           <span
@@ -432,11 +533,9 @@ const RecipeSuggestions = () => {
                         ))}
                       </div>
                     </div>
-                    
                     <div>
                       <h3 className="font-semibold text-gray-800 mb-4">Description</h3>
                       <p className="text-gray-600 mb-6">{selectedRecipe.description}</p>
-                      
                       <h3 className="font-semibold text-gray-800 mb-4">Ingredients</h3>
                       <ul className="space-y-2 mb-6">
                         {selectedRecipe.ingredients.map((ingredient, index) => (
@@ -446,9 +545,18 @@ const RecipeSuggestions = () => {
                           </li>
                         ))}
                       </ul>
+                      {showFullInstructions && (
+                        <div className="mt-6">
+                          <h3 className="font-semibold text-gray-800 mb-2">Full Recipe Instructions</h3>
+                          <div className="text-gray-700 whitespace-pre-line">
+                            {selectedRecipe.fullRecipe
+                              ? selectedRecipe.fullRecipe
+                              : selectedRecipe.instructions || 'No detailed instructions available.'}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                  
                   <div className="flex gap-3 mt-6">
                     <motion.button
                       className="btn-primary flex-1"
@@ -458,11 +566,12 @@ const RecipeSuggestions = () => {
                       Add to Meal Plan ➕
                     </motion.button>
                     <motion.button
-                      className="btn-outline flex-1"
+                      className={`btn-outline flex-1 ${showFullInstructions ? 'bg-primary-100' : ''}`}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
+                      onClick={() => setShowFullInstructions((prev) => !prev)}
                     >
-                      View Full Recipe 📖
+                      {showFullInstructions ? 'Hide Full Recipe' : 'View Full Recipe'} 📖
                     </motion.button>
                     <motion.button
                       className="btn-secondary flex-1"

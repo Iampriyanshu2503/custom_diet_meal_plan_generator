@@ -601,7 +601,7 @@ const ProgressTracker = () => {
         </motion.div>
       </div>
       {/* Floating AI Chatbox Button and Chatbox */}
-      <AIChatboxLauncher />
+      {/* <AIChatboxLauncher /> */}
     </div>
   );
 };
