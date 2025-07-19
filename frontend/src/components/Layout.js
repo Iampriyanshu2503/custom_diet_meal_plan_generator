@@ -14,95 +14,7 @@ const Layout = ({ children, isLoggedIn, setIsLoggedIn }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
-      {/* Main Header/Navbar */}
-      <header className="fixed top-0 left-0 right-0 z-50">
-        <div className="glass-card mx-4 mt-4 rounded-xl border border-white/20">
-          <div className="flex items-center justify-between px-6 py-4">
-            {/* Logo */}
-            <motion.div 
-              className="flex items-center space-x-3"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-glow">
-                🥗
-              </div>
-              <div className="flex flex-col">
-                <span className="text-lg font-bold text-gradient-primary leading-tight">NutriPlan</span>
-                <span className="text-xs text-gray-500 leading-tight">Healthy Living</span>
-              </div>
-            </motion.div>
-
-            {/* Navigation Menu - Only show when logged in */}
-            <AnimatePresence>
-              {isLoggedIn && (
-                <motion.nav
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className="hidden md:flex items-center space-x-6"
-                >
-                  {navItems.map((item, index) => (
-                    <Link
-                      key={index}
-                      to={item.path}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 text-gray-600 hover:text-primary-600 hover:bg-white/50`}
-                    >
-                      <span className="text-lg">{item.icon}</span>
-                      <span className="font-medium">{item.label}</span>
-                    </Link>
-                  ))}
-                </motion.nav>
-              )}
-            </AnimatePresence>
-
-            {/* User Actions */}
-            <div className="flex items-center space-x-3">
-              {!isLoggedIn ? (
-                <div className="flex items-center space-x-2">
-                  <motion.button
-                    className="btn-outline px-4 py-2 text-sm"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Login
-                  </motion.button>
-                  <motion.button
-                    className="btn-primary px-4 py-2 text-sm"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Sign Up
-                  </motion.button>
-                </div>
-              ) : (
-                <motion.div
-                  className="flex items-center space-x-3"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                >
-                  <motion.button
-                    className="w-8 h-8 bg-gradient-secondary rounded-full flex items-center justify-center text-white text-sm"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    🔔
-                  </motion.button>
-                  <motion.div
-                    className="w-8 h-8 bg-gradient-accent rounded-full flex items-center justify-center text-white text-sm font-bold"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    S
-                  </motion.div>
-                </motion.div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-white">
       {/* Main Content */}
       <main className={isLoggedIn ? "pt-24 pb-20" : "pt-24"}>
         {children}
@@ -230,37 +142,6 @@ const Layout = ({ children, isLoggedIn, setIsLoggedIn }) => {
           </motion.button>
         )}
       </AnimatePresence>
-
-      {/* Status Bar (for mobile) */}
-      <div className="fixed top-0 left-0 right-0 z-40">
-        <div className="glass-card mx-4 mt-4 rounded-xl border border-white/20">
-          <div className="flex items-center justify-between px-4 py-2">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                  🥗
-                </div>
-                <span className="text-sm font-bold text-gradient-primary">NutriPlan</span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs text-gray-500">9:41</span>
-              <div className="flex space-x-1">
-                <div className="w-1 h-3 bg-gray-400 rounded-full"></div>
-                <div className="w-1 h-3 bg-gray-400 rounded-full"></div>
-                <div className="w-1 h-3 bg-gray-400 rounded-full"></div>
-                <div className="w-1 h-3 bg-gray-400 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Background Pattern */}
-      <div className="fixed inset-0 pointer-events-none opacity-5">
-        <div className="absolute inset-0 bg-pattern-dots"></div>
-      </div>
     </div>
   );
 };

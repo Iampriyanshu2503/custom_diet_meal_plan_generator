@@ -337,7 +337,7 @@ exports.updateProfile = async (req, res) => {
 
     const allowedUpdates = [
       'name', 'age', 'gender', 'weight', 'height', 'activityLevel', 
-      'goal', 'targetWeight', 'dietaryRestrictions', 'dailyCalorieGoal', 'waterGoal'
+      'goal', 'targetWeight', 'dietaryRestrictions', 'dailyCalorieGoal', 'waterGoal', 'avatar'
     ];
 
     allowedUpdates.forEach(field => {
@@ -368,7 +368,16 @@ exports.updateProfile = async (req, res) => {
         email: user.email,
         bmi: user.bmi,
         goal: user.goal,
-        dailyCalorieGoal: user.dailyCalorieGoal
+        dailyCalorieGoal: user.dailyCalorieGoal,
+        avatar: user.avatar,
+        age: user.age,
+        gender: user.gender,
+        weight: user.weight,
+        height: user.height,
+        activityLevel: user.activityLevel,
+        targetWeight: user.targetWeight,
+        dietaryRestrictions: user.dietaryRestrictions,
+        waterGoal: user.waterGoal
       }
     });
 

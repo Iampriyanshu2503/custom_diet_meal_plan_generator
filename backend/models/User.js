@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
     minlength: 6
   },
   
+  avatar: { type: String },
   // Profile Information
   name: { 
     type: String, 

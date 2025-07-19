@@ -10,6 +10,7 @@ import RecipeSuggestions from './pages/RecipeSuggestions';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import { bmiAPI } from './services/api';
+import Navbar from './components/Navbar';
 
 // BMI Calculator Component
 const bmiCategories = [
@@ -174,9 +175,14 @@ const BMICalculator = ({ onClose }) => {
 function App() {
   const [showBMICalculator, setShowBMICalculator] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('profileDarkMode') === 'true';
+  });
 
   return (
     <Router>
+      {/* Pass isLoggedIn and setIsLoggedIn to Navbar */}
+      <Navbar darkMode={darkMode} setDarkMode={setDarkMode} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Layout isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}>
         <AnimatePresence>
           {showBMICalculator && (
@@ -185,7 +191,7 @@ function App() {
         </AnimatePresence>
         
         <Routes>
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={<Profile darkMode={darkMode} setDarkMode={setDarkMode} />} />
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Dashboard onBMIClick={() => setShowBMICalculator(true)} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />

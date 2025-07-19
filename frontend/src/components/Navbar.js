@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 
-function Navbar() {
+function Navbar({ darkMode, setDarkMode, isLoggedIn, setIsLoggedIn }) {
   // Real-time clock state
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -18,8 +18,26 @@ function Navbar() {
     return () => clearInterval(timer);
   }, []);
 
+  // Handle dark mode toggle
+  const handleThemeToggle = () => {
+    setDarkMode(dm => {
+      localStorage.setItem('profileDarkMode', !dm);
+      return !dm;
+    });
+  };
+
   return (
-    <AppBar position="static" color="primary" sx={{ boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+    <AppBar
+      position="static"
+      color="transparent"
+      elevation={0}
+      sx={{
+        background: 'transparent',
+        boxShadow: 'none',
+        backdropFilter: 'none',
+        transition: 'none'
+      }}
+    >
       <Container maxWidth="xl">
         <Toolbar sx={{ 
           display: 'flex', 
@@ -84,6 +102,17 @@ function Navbar() {
             <Button 
               color="inherit" 
               component={Link} 
+              to="/profile" 
+              sx={{ 
+                whiteSpace: 'nowrap',
+                fontSize: { xs: '0.875rem', sm: '1rem' }
+              }}
+            >
+              Profile
+            </Button>
+            <Button 
+              color="inherit" 
+              component={Link} 
               to="/about" 
               sx={{ 
                 whiteSpace: 'nowrap',
@@ -92,10 +121,26 @@ function Navbar() {
             >
               About
             </Button>
+            {/* Show Login/Signup only if not logged in */}
+            {!isLoggedIn && (
+              <>
+                <Button color="inherit" component={Link} to="/login" sx={{ whiteSpace: 'nowrap', fontSize: { xs: '0.875rem', sm: '1rem' } }}>Login</Button>
+                <Button color="inherit" component={Link} to="/profile-setup" sx={{ whiteSpace: 'nowrap', fontSize: { xs: '0.875rem', sm: '1rem' } }}>Sign Up</Button>
+              </>
+            )}
             {/* Real-time clock display */}
             <Typography variant="body1" sx={{ ml: 2, fontWeight: 500, letterSpacing: 1 }}>
               {currentTime.toLocaleTimeString()}
             </Typography>
+            {/* Dark mode toggle button */}
+            <Button
+              color="inherit"
+              onClick={handleThemeToggle}
+              sx={{ ml: 2, fontWeight: 700, fontSize: { xs: '1.2rem', sm: '1.3rem' } }}
+              aria-label="Toggle dark mode"
+            >
+              {darkMode ? '🌙' : '☀️'}
+            </Button>
           </Box>
         </Toolbar>
       </Container>
